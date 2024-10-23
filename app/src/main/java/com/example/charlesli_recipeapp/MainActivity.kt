@@ -128,7 +128,7 @@ data class RecipeResponse(
     @Json(name = "offset") val offset: Int?,
     @Json(name = "number") val number: Int?,
     @Json(name = "results") val results: List<Recipe>,
-    @Json(name = "totalResults") val totalResults: Int? // If you want to capture total results
+    @Json(name = "totalResults") val totalResults: Int?
 )
 
 data class Recipe(
@@ -152,7 +152,7 @@ class RecipeRepository(private val apiService: SpoonacularApiService) {
 }
 
 class RecipeViewModelFactory(private val repository: RecipeRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {  // Use 'override' here
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RecipeViewModel::class.java)) {
             return RecipeViewModel(repository) as T
         }
@@ -182,7 +182,6 @@ class RecipeViewModel(private val repository: RecipeRepository) : ViewModel() {
                 Log.d("RecipeViewModel", "JSON Response: $jsonResponse")
                 _recipes.value = response.results
             } catch (e: Exception) {
-                // Handle exception (could log or show an error message)
                 Log.e("RecipeViewModel", "Error fetching recipes: ${e.message}")
             }
         }
@@ -209,10 +208,10 @@ fun RecipeApp(modifier: Modifier = Modifier, viewModel: RecipeViewModel) {
 
     if (selectedRecipe == null) {
         RecipeSearch(viewModel = viewModel) { recipe ->
-            selectedRecipe = recipe // Set selected recipe on click
+            selectedRecipe = recipe
         }
     } else {
-        RecipeInfo(recipe = selectedRecipe!!) { // Pass a lambda to reset selected recipe
+        RecipeInfo(recipe = selectedRecipe!!) {
             selectedRecipe = null
         }
     }
@@ -228,7 +227,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 //    var clicked by remember { mutableIntStateOf(0)}
 
     Column(modifier = Modifier.padding(16.dp)) {
-        // Text input for query
         TextField(
             value = query,
             onValueChange = { query = it },
@@ -239,7 +237,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Text input for cuisine
         TextField(
             value = cuisine,
             onValueChange = { cuisine = it },
@@ -250,7 +247,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Text input for diet
         TextField(
             value = diet,
             onValueChange = { diet = it },
@@ -261,7 +257,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Text input for max calories
         TextField(
             value = maxCalories,
             onValueChange = { maxCalories = it },
@@ -272,7 +267,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Button to submit the search
         Button(
             onClick = {viewModel.searchRecipes(query, cuisine.takeIf { it.isNotEmpty() }, diet.takeIf { it.isNotEmpty() }, maxCalories.takeIf { it.isNotEmpty() })
                       },
@@ -283,7 +277,6 @@ fun RecipeSearch(modifier: Modifier = Modifier, viewModel: RecipeViewModel, onRe
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display the recipe results
         LazyColumn {
             if (recipes.isEmpty()) {
                 item {
@@ -321,7 +314,6 @@ fun RecipeItem(recipe: Recipe, onClick: () -> Unit) {
 @Composable
 fun RecipeInfo(recipe: Recipe, modifier: Modifier = Modifier, onBackClick: () -> Unit) {
     Column(modifier = modifier.padding(16.dp)) {
-        // Back button
         IconButton(onClick = onBackClick) {
             Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
         }
@@ -338,7 +330,6 @@ fun RecipeInfo(recipe: Recipe, modifier: Modifier = Modifier, onBackClick: () ->
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Add more details from the recipe if available
         Text(text = "Recipe detail!") // Replace with actual details
     }
 }
